@@ -2,6 +2,7 @@ package com.example.SpringBoot.controller;
 
 import com.example.SpringBoot.exception.ResourceNotFoundException;
 import com.example.SpringBoot.model.Product;
+import com.example.SpringBoot.request.AddProductRequest;
 import com.example.SpringBoot.response.APIResponse;
 import com.example.SpringBoot.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix/products")
+@RestController
+@RequestMapping("${api.prefix}/products")
 public class ProductController {
     private final IProductService productService;
 
@@ -39,38 +40,16 @@ public class ProductController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<APIResponse> getProductByBrand(@RequestParam String brand) {
-        try{
-            List<Product> products = productService.getProductsByBrand(brand);
-            return ResponseEntity.ok(new APIResponse("Success!", products));
-        }
-        catch (ResourceNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(e.getMessage(), null));
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<APIResponse> getProductByCategory(@RequestParam String category) {
-        try{
-            List<Product> products = productService.getProductsByCategory(category);
-            return ResponseEntity.ok(new APIResponse("Success!", products));
-        }
-        catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(e.getMessage(), null));
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<APIResponse> getProductByName(@RequestParam String name) {
+    @PostMapping
+    public ResponseEntity<APIResponse> createProduct(@RequestBody AddProductRequest request) {
         try {
-            List<Product> products = productService.getProductsByName(name);
-            return ResponseEntity.ok(new APIResponse("Success!", products));
+            Product product = productService.addProduct(request);
+            return ResponseEntity.ok(new APIResponse("Success!", product));
         }
-        catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(e.getMessage(), null));
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new APIResponse("Failed to create Product", null));
         }
+
     }
 
-    
 }
