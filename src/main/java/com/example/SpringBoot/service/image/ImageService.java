@@ -36,7 +36,7 @@ public class ImageService implements IImageService {
     }
 
     @Override
-    public List<ImageDto> saveImage(List<MultipartFile> files, Long productId) {
+    public List<ImageDto> saveImages(List<MultipartFile> files, Long productId) {
         Product product = productService.getProductById(productId);
         List<ImageDto> savedImageDtos = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -45,6 +45,7 @@ public class ImageService implements IImageService {
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
                 image.setImage(new SerialBlob(file.getBytes()));
+                image.setProduct(product);
 
                 String downloadUrl  = "/api/v1/images/image/download/" + image.getId();
                 image.setDownloadUrl(downloadUrl);

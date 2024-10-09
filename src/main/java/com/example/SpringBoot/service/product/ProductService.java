@@ -1,6 +1,6 @@
 package com.example.SpringBoot.service.product;
 
-import com.example.SpringBoot.exception.ProductNotFoundException;
+import com.example.SpringBoot.exception.ResourceNotFoundException;
 import com.example.SpringBoot.model.Category;
 import com.example.SpringBoot.model.Product;
 import com.example.SpringBoot.repository.CategoryRepository;
@@ -43,13 +43,13 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("Product not found"));
+        return productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
     }
 
     @Override
     public Product updateProduct(ProductUpdateRequest updateProduct, Long productId) {
         return productRepository.findById(productId).map(existingProduct -> updateExistingProduct(existingProduct, updateProduct))
-                .orElseThrow(()->new ProductNotFoundException("Product not found"));
+                .orElseThrow(()->new ResourceNotFoundException("Product not found"));
     }
 
     private Product updateExistingProduct(Product product, ProductUpdateRequest updatedProduct) {
@@ -69,7 +69,7 @@ public class ProductService implements IProductService {
     public void deleteProduct(Long id) {
          productRepository
                 .findById(id).ifPresentOrElse(productRepository::delete,
-                         ()->{throw new ProductNotFoundException("Product not found!");});
+                         ()->{throw new ResourceNotFoundException("Product not found!");});
     }
 
     @Override
