@@ -7,7 +7,6 @@ import com.example.SpringBoot.response.APIResponse;
 import com.example.SpringBoot.service.image.IImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +23,7 @@ import java.util.List;
 public class ImageController {
     private final IImageService imageService;
 
-    @PostMapping("/upload")
+    @PostMapping
     public ResponseEntity<APIResponse> saveImages(@RequestParam List<MultipartFile> files, @RequestParam Long productId) {
         try {
             List<ImageDto> imageDtos = imageService.saveImages(files, productId);
@@ -36,17 +35,23 @@ public class ImageController {
 
     }
 
-    @GetMapping("/image/download/{id}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable Long id) throws SQLException {
-        Image image = imageService.getImageById(id);
-        ByteArrayResource resource= new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
+    @GetMapping("{id}")
+    public ResponseEntity<?> downloadImage(@PathVariable Long id) throws SQLException {
+        try{
+            Image image = imageService.getImageById(id);
+            ByteArrayResource resource= new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
 
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFileName()+"\"")
-                .body(resource);
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFileName()+"\"")
+                    .body(resource);
+        }
+        catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse("Image not found!", null));
+        }
+
     }
 
-    @PutMapping("/image/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateImage(@PathVariable Long id, @RequestBody MultipartFile file) {
             try{
                 Image image = imageService.getImageById(id);
@@ -61,7 +66,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse("Update failed!", null));
     }
 
-    @DeleteMapping("/image/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse> deleteImage(@PathVariable Long id) {
         try{
             Image image = imageService.getImageById(id);
