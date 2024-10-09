@@ -52,19 +52,8 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/")
-    public ResponseEntity<APIResponse> getCategoryByName(@RequestParam String name) {
-        try{
-            Category category = categoryService.getCategoryByName(name);
-            return ResponseEntity.ok(new APIResponse("Found!", category));
-        }
-        catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(e.getMessage(), null));
-        }
 
-    }
-
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateCategory(@PathVariable Long id, @RequestBody Category category) {
         try{
             Category oldCategory = categoryService.getCategoryById(id);
@@ -80,7 +69,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse("Error while updating category!",null));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse> deleteCategoryById(@PathVariable Long id) {
         try {
             Category category = categoryService.getCategoryById(id);

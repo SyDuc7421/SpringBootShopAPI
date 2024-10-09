@@ -29,7 +29,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<APIResponse> getProductById(@PathVariable Long id) {
         try{
             Product product = productService.getProductById(id);
